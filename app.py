@@ -2,7 +2,7 @@ from flask import Flask
 from flask_restful import Resource, Api
 from flask_mongoengine import MongoEngine
 from flask_restful import reqparse
-
+from mongoengine import NotUniqueError
 
 app = Flask(__name__)
 
@@ -63,9 +63,57 @@ class Users(Resource):
 
 
 class User(Resource):
+
+
+    @staticmethod
+    def validate_cpf(cpf):
+        # Remove non-numeric characters
+        cpf = ''.join(filter(str.isdigit, cpf))
+
+        # Check if CPF has 11 digits
+        if len(cpf) != 11:
+            return False
+
+        # Check if all digits are equal
+        if cpf == cpf[0] * 11:
+            return False
+
+        # Calculate first verifier digit
+        sum_ = sum(int(cpf[i]) * (10 - i) for i in range(9))
+        remainder = sum_ % 11
+        if remainder < 2:
+            digit1 = 0
+        else:
+            digit1 = 11 - remainder
+
+        # Verify first verifier digit
+        if digit1 != int(cpf[9]):
+            return False
+
+        # Calculate second verifier digit
+        sum_ = sum(int(cpf[i]) * (11 - i) for i in range(10))
+        remainder = sum_ % 11
+        if remainder < 2:
+            digit2 = 0
+        else:
+            digit2 = 11 - remainder
+
+        # Verify second verifier digit
+        if digit2 != int(cpf[10]):
+            return False
+
+        return True
+
     def post(self):
         data = user_parse.parse_args()
-        UserModel(**data).save()
+        
+        if not self.validate_cpf(data["cpf"]):
+            return {"message": "CPF is invalid!"}, 400
+        try:
+            response = UserModel(**data).save()
+            return {"message": "user %s sucessfully created!" % response.id}
+        except NotUniqueError:
+            return {"message": "CPF already exists in database!"}, 400
 
     def get(self, cpf):
         return {'message': 'CPF'}
