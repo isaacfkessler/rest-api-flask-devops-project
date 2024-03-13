@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, jsonify
 from flask_restful import Resource, Api
 from flask_mongoengine import MongoEngine
 from flask_restful import reqparse
@@ -59,7 +59,7 @@ class UserModel(db.Document):
 
 class Users(Resource):
     def get(self):
-        return {'message': 'user 1'}
+        return jsonify(UserModel.objects())
 
 
 class User(Resource):
@@ -116,7 +116,7 @@ class User(Resource):
             return {"message": "CPF already exists in database!"}, 400
 
     def get(self, cpf):
-        return {'message': 'CPF'}
+        return jsonify(UserModel.objects(cpf=cpf))
 
 
 api.add_resource(Users, '/users')
