@@ -19,6 +19,6 @@ services:
     depends_on:
       - mongodb
     volumes:
-      - .:/app
+      - ./application:/app/application
     environment:
       - FLASK_ENV=development
