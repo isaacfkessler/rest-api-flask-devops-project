@@ -3,6 +3,7 @@ APP = restapi-devops
 test:
 	@pytest -v --disable-warnings
 	@black .
+	@bandit -r . -x '/.venv/','/tests/'
 
 compose:
 	@docker compose build
