@@ -25,7 +25,7 @@ setup-dev:
 	--install \
 	--set image.tag=5.0.8 \
 	--set auth.rootPassword="root" \
-	mongodb kubernetes/chats/mongodb
+	mongodb kubernetes/charts/mongodb
 	@kubectl wait \
   		--for=condition=ready pod \
   		--selector=app.kubernetes.io/component=mongodb \
