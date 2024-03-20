@@ -2,6 +2,7 @@ APP = restapi-devops
 
 test:
 	@pytest -v --disable-warnings
+	@black .
 
 compose:
 	@docker compose build

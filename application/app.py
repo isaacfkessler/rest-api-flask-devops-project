@@ -5,32 +5,21 @@ from .model import UserModel, HealthCheckModel
 
 
 user_parse = reqparse.RequestParser()
-user_parse.add_argument('first_name',
-                    type=str,
-                    required=True,
-                    help='This field cannot be blank'
-                    )
-user_parse.add_argument('last_name',
-                    type=str,
-                    required=True,
-                    help='This field cannot be blank'
-                    )
-user_parse.add_argument('email',
-                    type=str,
-                    required=True,
-                    help='This field cannot be blank'
-                    )
-user_parse.add_argument('cpf',
-                    type=str,
-                    required=True,
-                    help='This field cannot be blank'
-                    )
-user_parse.add_argument('birth_date',
-                    type=str,
-                    required=True,
-                    help='This field cannot be blank'
-                    )
-
+user_parse.add_argument(
+    "first_name", type=str, required=True, help="This field cannot be blank"
+)
+user_parse.add_argument(
+    "last_name", type=str, required=True, help="This field cannot be blank"
+)
+user_parse.add_argument(
+    "email", type=str, required=True, help="This field cannot be blank"
+)
+user_parse.add_argument(
+    "cpf", type=str, required=True, help="This field cannot be blank"
+)
+user_parse.add_argument(
+    "birth_date", type=str, required=True, help="This field cannot be blank"
+)
 
 
 class HealthCheck(Resource):
@@ -49,12 +38,10 @@ class Users(Resource):
 
 
 class User(Resource):
-
-
     @staticmethod
     def validate_cpf(cpf):
         # Remove non-numeric characters
-        cpf = ''.join(filter(str.isdigit, cpf))
+        cpf = "".join(filter(str.isdigit, cpf))
 
         # Check if CPF has 11 digits
         if len(cpf) != 11:
@@ -92,7 +79,7 @@ class User(Resource):
 
     def post(self):
         data = user_parse.parse_args()
-        
+
         if not self.validate_cpf(data["cpf"]):
             return {"message": "CPF is invalid!"}, 400
         try:
@@ -106,12 +93,12 @@ class User(Resource):
 
         if response:
             return jsonify(response)
-        
+
         return {"message": "User does not exist in database!"}, 400
-    
+
     def patch(self):
         data = user_parse.parse_args()
-        
+
         if not self.validate_cpf(data["cpf"]):
             return {"message": "CPF is invalid!"}, 400
 
@@ -120,7 +107,7 @@ class User(Resource):
             response.update(**data)
             return {"message": "User updated!"}, 200
         else:
-            return {"message": "User does not exist in database!"}, 400    
+            return {"message": "User does not exist in database!"}, 400
 
     def delete(self, cpf):
         response = UserModel.objects(cpf=cpf)
@@ -130,4 +117,3 @@ class User(Resource):
             return {"message": "User deleted!"}, 200
         else:
             return {"message": "User does not exist in database!"}, 400
-    

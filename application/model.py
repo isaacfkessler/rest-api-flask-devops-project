@@ -1,7 +1,6 @@
 from .db import db
 
 
-
 class UserModel(db.Document):
     cpf = db.StringField(required=True, unique=True)
     email = db.EmailField(required=True)
