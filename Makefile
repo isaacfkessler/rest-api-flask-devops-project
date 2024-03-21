@@ -1,4 +1,4 @@
-APP = restapi-devops
+APP = restapi-flask
 
 test:
 	@pytest -v --disable-warnings
@@ -33,3 +33,12 @@ setup-dev:
 
 teardown-dev:
 	@kind delete clusters kind
+
+
+deploy-dev:
+	@docker build -t $(APP) .
+	@kind load docker-image $(APP):latest
+	@kubectl apply -f kubernetes/manifests
+	@kubectl rollout restart deploy $(APP)
+
+dev: setup-dev deploy-dev
